@@ -62,7 +62,7 @@ function drawTable(dataset, anSelectat) {
       tdPop.innerHTML = tableData[i].indicator === "POP" ? tableData[i].valoare : "";
       tr.appendChild(tdPop);
       tBody.appendChild(tr);
-      console.log("Bunaaaaa");
+
 
 
    }
@@ -71,7 +71,9 @@ function drawTable(dataset, anSelectat) {
    //adaugare tabel in pagina
    document.body.appendChild(table);
 }
+function drawChart(dataset,indicatorSelectat,taraSelectata){
 
+}
 async function main() {
    const dataset = await getDate();
    console.log(dataset);
@@ -91,6 +93,8 @@ async function main() {
    console.log(ani);
    let select = document.getElementById("ani");
    let selectTara = document.getElementById("selectTara");
+   select.add(new Option());
+   selectTara.add(new Option());
    //populare cu anii selectati din array
    for (let a in ani) {
       select.add(new Option(ani[a]));
@@ -105,11 +109,16 @@ async function main() {
       drawTable(dataset, anSelectat);
    })
 
-   drawTable(dataset, anSelectat);
+   //drawTable(dataset, anSelectat);
+    let taraSelectata=selectTara.options[selectTara.selectedIndex];
+    let indicatorSelectat;
+   // drawChart(dataset,indicatorSelectat,taraSelectata);
+
 }
 
 
 
 
 main();
-//idee: spinner-kind-of-thing cu anii si cand alege userul se creeaza tabel
+//idee: spinner-kind-of-thing cu anii si cand alege userul se creeaza tabel 
+//another idea: link si cand dau click pe el apar cele 2 select-uri sa-si aleaga user-ul tara si indicatorul pt chart
