@@ -1,28 +1,29 @@
-h3{
-display: flex;
-justify-content: center;
-text-align: center;
-font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-color:whitesmoke;
-}
 body{
-  margin: 4px;
-  background-color: cadetblue;
-}
+ margin: 3px;
+ background-color: LavenderBlush;
+ }
 #ani{
-  display: inline-flex;
   width:10%;
   margin: 10px;
   border-radius: 10px;
 }
 #selectTara{
-    display: inline-flex;
+    position: relative;
     width:10%;
+    float: right;
+    left: 50%;
     margin: 10px;
     border-radius: 10px;
 }
 #btnDeseneazaTabel,#btnBubbleChart,#btnChart{
   border-radius: 10px;
+  background-color: cadetblue;
+  margin: 3px;
+}
+#btnChart{
+  position: relative;
+  left: 50%;
+  
 }
 #dataTable{
   width:50%;

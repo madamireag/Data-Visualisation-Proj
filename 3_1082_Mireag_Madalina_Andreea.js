@@ -133,11 +133,13 @@ async function main() {
       selectTara.add(new Option(tari[t]));
    }
    let btnDrawTable=document.getElementById("btnDeseneazaTabel");
+   let btnDrawBublechart=document.getElementById("btnBubbleChart");
    let anSelectat=undefined;
    anSelectat = select.options[select.selectedIndex].value;
    select.addEventListener("change", function () {
       anSelectat = this.value;
-     
+      btnDrawTable.style.display="inline-block";
+      btnDrawBublechart.style.display="inline-block";
    })
     btnDrawTable.addEventListener('click',function(){
        console.log(anSelectat);
