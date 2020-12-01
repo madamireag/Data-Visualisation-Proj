@@ -42,6 +42,7 @@ function drawTable(dataset, anSelectat) {
    let tableData = [];
    let SVvalues;
    let maxValue;
+   let minValue;
    //filtrez datele si le iau doar pe cele care corespund anului selectat
    tableData = dataset.filter(e => e.an === anSelectat);
    //iau toate tarile intr-un vector(sunt 27 de tari in UE)
@@ -57,33 +58,41 @@ function drawTable(dataset, anSelectat) {
       for (let index = 0; index < tableData.length; index++) {
        
          if (tableData[index].tara === element) {
-            SVvalues=tableData.filter(e=>e.indicator==="SV");
+            SVvalues=tableData.filter(e=>e.indicator==="SV").filter(el=>el.valoare!==null);
             switch (tableData[index].indicator) {
                case "SV":
                   tdSV.innerHTML = (tableData[index].valoare !== null ? tableData[index].valoare : "-");
                   maxValue = Math.max(...SVvalues.map(x => x.valoare));
-                  let minValue = Math.min(...SVvalues.map(x => x.valoare));
+                  minValue = Math.min(...SVvalues.map(x => x.valoare));
                   console.log(minValue)
                   console.log(SVvalues);
                   if(tableData[index].valoare===maxValue){
                      tdSV.style.backgroundColor="green";
                   }
-                   if(tableData[index].valoare===minValue && tableData[index].valoare!==null){
+                   if(tableData[index].valoare===minValue){
                      tdSV.style.backgroundColor="red";
                   }
                   break;
                case "PIB":
                   tdPIB.innerHTML = (tableData[index].valoare!==null?tableData[index].valoare:" - ");
                   maxValue = Math.max(...tableData.filter(e=>e.indicator==="PIB").map(x => x.valoare));
+                  minValue = Math.min(...tableData.filter(e=>e.indicator==="PIB" && e.valoare!==null).map(x => x.valoare));
                   if(tableData[index].valoare===maxValue){
                      tdPIB.style.backgroundColor="green";
+                  }
+                  if(tableData[index].valoare===minValue){
+                     tdPIB.style.backgroundColor="red";
                   }
                   break;
                case "POP":
                   tdPop.innerHTML = (tableData[index].valoare!==null?tableData[index].valoare:" - ");
                   maxValue = Math.max(...tableData.filter(e=>e.indicator==="POP").map(x => x.valoare));
+                  minValue = Math.min(...tableData.filter(e=>e.indicator==="POP" && e.valoare!==null).map(x => x.valoare));
                   if(tableData[index].valoare===maxValue){
                      tdPop.style.backgroundColor="green";
+                  }
+                  if(tableData[index].valoare===minValue){
+                     tdPop.style.backgroundColor="red";
                   }
 
             }
@@ -119,6 +128,7 @@ barChart.draw(date);
 async function main() {
    const dataset = await getDate();
    //console.log(dataset);
+
    let ani = [];
    let tari = [];
    //parcurgere vector de date si extragere ani(fara duplicate)
