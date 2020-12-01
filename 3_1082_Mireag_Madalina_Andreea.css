@@ -1,5 +1,5 @@
 body{
- margin: 3px;
+ margin: 5px;
  background-color: seashell;
  }
 #ani{
@@ -22,7 +22,15 @@ body{
   color:white;
   margin: 3px;
 }
+#navBar{
+  display: flex;
+  justify-content: flex-start; 
+  align-items: center; 
+  margin:10px; 
+  width:100%; 
+  height: 40px;
+}
 #dataTable{
   width:40%;
-  
+  border-radius: 20px;
 }
