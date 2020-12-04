@@ -1,6 +1,7 @@
 body{
- margin: 5px;
+ margin: 3px;
  background-color: seashell;
+ width: 100%;
  }
 #ani{
   display: inline-block; 
@@ -30,7 +31,16 @@ body{
   width:100%; 
   height: 40px;
 }
+#chart_div{
+  position: relative;
+  float: right;
+  right:5%;
+  width: 55%;
+}
+
 #dataTable{
   width:40%;
-  border-radius: 20px;
+  height: 60%;
+  position: relative;
+  float: left;
 }

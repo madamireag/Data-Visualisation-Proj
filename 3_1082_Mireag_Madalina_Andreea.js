@@ -131,12 +131,13 @@ function drawTable(dataset, anSelectat) {
 }
 
 function drawChart(dataset, taraSelectata) {
-   let barChart = new BarChart(document.body);
+   let barChart = new BarChart(document.getElementById("chart_div"));
 
-   let date = dataset.filter(el => el.tara === taraSelectata).filter(el => el.indicator === "SV");
+   let date = dataset.filter(el => el.tara === taraSelectata && el.valoare!=null).filter(el => el.indicator === "PIB");
    console.log(date);
 
    let svg = document.getElementById("svgChart");
+  
    barChart.draw(date);
 
 
@@ -197,10 +198,12 @@ async function main() {
       }
 
    })
-   //drawTable(dataset, anSelectat);
 
    btnBarchart.addEventListener("click", function () {
       drawChart(dataset, taraSelectata);
+   });
+   btnDrawBublechart.addEventListener("click",function(){
+
    });
 
 
@@ -210,7 +213,7 @@ class BarChart {
    constructor(domElement) {
       this.domElement = domElement;
       this.svgns = "http://www.w3.org/2000/svg"
-      this.width = domElement.clientWidth / 2;
+      this.width = domElement.clientWidth;
       this.height = domElement.clientHeight;
 
    }
@@ -221,6 +224,7 @@ class BarChart {
       this.drawBars(data);
    }
    createSVG() {
+      console.log(this.width);
       this.svg = document.createElementNS(this.svgns, "svg");
       this.svg.style.borderColor = "black";
       this.svg.style.borderWidth = "1px";
@@ -243,28 +247,34 @@ class BarChart {
    }
    drawBars() {
       const barWidth = this.width / this.data.length;
-      const maxValue = Math.max(...this.data.map(x => x[3]));//maxim de pe a doua componenta din subvectori
+      
+      const maxValue = Math.max(...this.data.map(x => x.valoare));
+      console.log(maxValue);
       const f = this.height / maxValue;
 
       for (let i = 0; i < this.data.length; i++) {
          const label = this.data[i].an;
          const value = this.data[i].valoare;
          console.log(value)
-         const barHeight = value * 0.9;
+         const barHeight = value * f *0.9 ;
          console.log(barHeight);
          const barX = i * barWidth;
          const barY = this.height - barHeight;
 
-
+         
          const bar = document.createElementNS(this.svgns, "rect");
          bar.setAttribute("x", barX + barWidth / 4);
-         bar.setAttribute("y", barY);
-         bar.setAttribute("width", barWidth / 2);
+         bar.setAttribute("y", barY-20);
+         bar.setAttribute("width", barWidth/2);
          bar.setAttribute("height", barHeight);
-         bar.style.fill = "#db4437"
+         bar.style.fill = "#724166"
          bar.style.stroke = "black";
          let strWidth = "stroke-width";
-         bar.style["stroke-width"] = "2px";
+         bar.style["stroke-width"] = "1px";
+     
+         bar.addEventListener('mouseover',(ev)=>{
+         //   alert(`Valoarea este: ${value}`);
+         });
 
          this.svg.appendChild(bar);
          const text = document.createElementNS(this.svgns, "text");
@@ -272,8 +282,10 @@ class BarChart {
          text.appendChild(document.createTextNode(label));
          //setare coordonate
          text.setAttribute("x", barX);
-         text.setAttribute("y", this.height - 10);
+         text.setAttribute("y", barY+barHeight-5);
          this.svg.appendChild(text);
+
+       
       }
 
    }
@@ -282,5 +294,5 @@ class BarChart {
 
 main();
 
-//idee: spinner-kind-of-thing cu anii si cand alege userul se creeaza tabel -> SEEMS TO WORK
+
 
