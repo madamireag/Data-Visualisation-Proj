@@ -69,11 +69,11 @@ function drawTable(dataset, anSelectat) {
                   if (tableData[index].valoare === minValue) {
                      tdSV.style.backgroundColor = "red";
                   }
-                  if(tableData[index].valoare > minValue && tableData[index].valoare <=(minValue+maxValue)/2){
-                     tdSV.style.backgroundColor="#FC3";
+                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                     tdSV.style.backgroundColor = "#FC3";
                   }
-                  if(tableData[index].valoare > (minValue+maxValue)/2 && tableData[index].valoare<maxValue){
-                     tdSV.style.backgroundColor="#9C3";
+                  if (tableData[index].valoare > (minValue + maxValue) / 2 && tableData[index].valoare < maxValue) {
+                     tdSV.style.backgroundColor = "#9C3";
                   }
                   break;
                case "PIB":
@@ -86,11 +86,11 @@ function drawTable(dataset, anSelectat) {
                   if (tableData[index].valoare === minValue) {
                      tdPIB.style.backgroundColor = "red";
                   }
-                  if(tableData[index].valoare > minValue && tableData[index].valoare <=(minValue+maxValue)/2){
-                     tdPIB.style.backgroundColor="#FC3";
+                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                     tdPIB.style.backgroundColor = "#FC3";
                   }
-                  if(tableData[index].valoare > (minValue+maxValue)/2 && tableData[index].valoare<maxValue){
-                     tdPIB.style.backgroundColor="#9C3";
+                  if (tableData[index].valoare > (minValue + maxValue) / 2 && tableData[index].valoare < maxValue) {
+                     tdPIB.style.backgroundColor = "#9C3";
                   }
                   break;
                case "POP":
@@ -103,11 +103,11 @@ function drawTable(dataset, anSelectat) {
                   if (tableData[index].valoare === minValue) {
                      tdPop.style.backgroundColor = "red";
                   }
-                  if(tableData[index].valoare > minValue && tableData[index].valoare <=(minValue+maxValue)/2){
-                     tdPop.style.backgroundColor="#FC3";
+                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                     tdPop.style.backgroundColor = "#FC3";
                   }
-                  if(tableData[index].valoare > (minValue+maxValue)/2 && tableData[index].valoare<maxValue){
-                     tdPop.style.backgroundColor="#9C3";
+                  if (tableData[index].valoare > (minValue + maxValue) / 2 && tableData[index].valoare < maxValue) {
+                     tdPop.style.backgroundColor = "#9C3";
                   }
 
             }
@@ -133,11 +133,11 @@ function drawTable(dataset, anSelectat) {
 function drawChart(dataset, taraSelectata) {
    let barChart = new BarChart(document.getElementById("chart_div"));
 
-   let date = dataset.filter(el => el.tara === taraSelectata && el.valoare!=null).filter(el => el.indicator === "PIB");
+   let date = dataset.filter(el => el.tara === taraSelectata && el.valoare != null).filter(el => el.indicator === "PIB");
    console.log(date);
 
    let svg = document.getElementById("svgChart");
-  
+
    barChart.draw(date);
 
 
@@ -200,9 +200,14 @@ async function main() {
    })
 
    btnBarchart.addEventListener("click", function () {
-      drawChart(dataset, taraSelectata);
+
+      if (taraSelectata !== "Selecteaza tara") {
+
+         drawChart(dataset, taraSelectata);
+      }
+      else alert("Selectati o tara!");
    });
-   btnDrawBublechart.addEventListener("click",function(){
+   btnDrawBublechart.addEventListener("click", function () {
 
    });
 
@@ -247,7 +252,7 @@ class BarChart {
    }
    drawBars() {
       const barWidth = this.width / this.data.length;
-      
+
       const maxValue = Math.max(...this.data.map(x => x.valoare));
       console.log(maxValue);
       const f = this.height / maxValue;
@@ -256,24 +261,31 @@ class BarChart {
          const label = this.data[i].an;
          const value = this.data[i].valoare;
          console.log(value)
-         const barHeight = value * f *0.9 ;
+         const barHeight = value * f * 0.9;
          console.log(barHeight);
          const barX = i * barWidth;
          const barY = this.height - barHeight;
 
-         
+
          const bar = document.createElementNS(this.svgns, "rect");
          bar.setAttribute("x", barX + barWidth / 4);
-         bar.setAttribute("y", barY-20);
-         bar.setAttribute("width", barWidth/2);
+         bar.setAttribute("y", barY - 20);
+         bar.setAttribute("width", barWidth / 2);
          bar.setAttribute("height", barHeight);
-         bar.style.fill = "#724166"
+         if (value === maxValue) {
+            bar.style.fill = "#724166";
+         } else {
+            bar.style.fill = "tomato";
+         }
+
          bar.style.stroke = "black";
          let strWidth = "stroke-width";
          bar.style["stroke-width"] = "1px";
-     
-         bar.addEventListener('mouseover',(ev)=>{
-         //   alert(`Valoarea este: ${value}`);
+
+         bar.addEventListener('mouseover', (ev) => {
+            let title = document.createElementNS(this.svgns, "title");
+            title.textContent = `Valoarea PIB: ${value}  Anul:${label}`;
+            bar.appendChild(title);
          });
 
          this.svg.appendChild(bar);
@@ -282,17 +294,17 @@ class BarChart {
          text.appendChild(document.createTextNode(label));
          //setare coordonate
          text.setAttribute("x", barX);
-         text.setAttribute("y", barY+barHeight-5);
+         text.setAttribute("y", barY + barHeight - 5);
          this.svg.appendChild(text);
 
-       
+
       }
 
    }
 }
 
 
-main();
+//main();
 
 
 
