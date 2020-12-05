@@ -132,24 +132,19 @@ function drawTable(dataset, anSelectat) {
 
 function drawChart(dataset, taraSelectata) {
    let barChart = new BarChart(document.getElementById("chart_div"));
-
    let date = dataset.filter(el => el.tara === taraSelectata && el.valoare != null).filter(el => el.indicator === "PIB");
-   console.log(date);
-
-   let svg = document.getElementById("svgChart");
-
+   //console.log(date);
    barChart.draw(date);
-
-
 }
 
 async function main() {
+   //preluare date din fisierul json
    const dataset = await getDate();
    //console.log(dataset);
 
    let ani = [];
    let tari = [];
-   //parcurgere vector de date si extragere ani(fara duplicate)
+   //parcurgere vector de date si extragere ani si tari(fara duplicate)
    for (i = 0; i < dataset.length; i++) {
       if (!ani.includes(dataset[i].an)) {
          ani.push(dataset[i].an);
@@ -164,7 +159,7 @@ async function main() {
    let selectTara = document.getElementById("selectTara");
    select.add(new Option("Selecteaza an"));
    selectTara.add(new Option("Selecteaza tara"));
-   //populare cu anii selectati din array
+   //populare cu anii/tarile din array
    for (let a in ani) {
       select.add(new Option(ani[a]));
    }
@@ -178,18 +173,21 @@ async function main() {
    let anSelectat = undefined;
    let taraSelectata = undefined;
 
+   //abonare la evenimentul de change=>cand user-ul alege un an apar butoanele cu optiunile corespunzatoare si se salveaza anul 
    select.addEventListener("change", function () {
       anSelectat = this.value;
       btnDrawTable.style.display = "inline-block";
       btnDrawBublechart.style.display = "inline-block";
    });
+   //abonare la evenimentul de change=>cand user-ul alege o tara apare butonul cu optiunea corespunzatoare si se salveaza tara 
    selectTara.addEventListener("change", function () {
       taraSelectata = this.value;
       btnBarchart.style.display = "inline-block";
 
    })
+   //tratare situatie in care user-ul apasa pe un buton fara un an selectat
    btnDrawTable.addEventListener('click', function () {
-      console.log(anSelectat);
+      //console.log(anSelectat);
       if (anSelectat !== "Selecteaza an") {
          drawTable(dataset, anSelectat);
       }
@@ -198,17 +196,17 @@ async function main() {
       }
 
    })
-
+   //tratare situatie in care user-ul apasa pe buton fara o tara selectata
    btnBarchart.addEventListener("click", function () {
-
       if (taraSelectata !== "Selecteaza tara") {
-
          drawChart(dataset, taraSelectata);
       }
       else alert("Selectati o tara!");
    });
    btnDrawBublechart.addEventListener("click", function () {
+      if (taraSelectata !== "Selecteaza tara") {
 
+      } else alert("Selectati o tara!");
    });
 
 
@@ -284,7 +282,9 @@ class BarChart {
 
          bar.addEventListener('mouseover', (ev) => {
             let title = document.createElementNS(this.svgns, "title");
-            title.textContent = `Valoarea PIB: ${value}  Anul:${label}`;
+            title.textContent = `PIB: ${value}  Anul:${label}`;
+            title.setAttribute("x",ev.clientX);
+            title.setAttribute("y",ev.clientY);
             bar.appendChild(title);
          });
 

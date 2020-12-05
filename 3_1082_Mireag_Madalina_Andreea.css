@@ -4,20 +4,22 @@ body{
  width: 100%;
  height: 100%;
  }
+ /*Stilizare select pt ani*/
 #ani{
   display: inline-block; 
   width:10%;
   margin: 3px;
   border-radius: 10px;
   padding: 5px 2px;
- 
-}
+ }
 #selectTara{
    display: inline-block; 
     width:10%;
     margin: 3px;
     border-radius: 10px;
+    padding: 5px 2px;
 }
+/*reguli comune aplicate butoanelor*/
 #btnDeseneazaTabel,#btnBubbleChart,#btnChart{
   border-radius: 10px;
   background-color: cadetblue;
@@ -37,6 +39,7 @@ body{
   float: right;
   right:5%;
   width: 55%;
+  height: 600px;
 }
 
 #dataTable{
