@@ -13,7 +13,7 @@ body{
   padding: 5px 2px;
  }
 #selectTara{
-   display: inline-block; 
+    display: inline-block; 
     width:10%;
     margin: 3px;
     border-radius: 10px;
@@ -26,6 +26,7 @@ body{
   color:white;
   margin: 3px;
 }
+/*stilizare navbar*/
 #navBar{
   display: flex;
   justify-content: flex-start; 
@@ -38,14 +39,19 @@ body{
   position: relative;
   float: right;
   right:5%;
-  width: 50%;
-  height: 600px;
+  width:100vh;
+  height: 80vh;
 }
 
 #dataTable{
-  width:40%;
-  height: 60%;
+  width:30%;
+  height: 50%;
   position: relative;
   float: left;
-  left: 1%;
+  left: 2%;
+  right: 2%;
 }
+td,th{
+padding: 3px !important;
+}
+

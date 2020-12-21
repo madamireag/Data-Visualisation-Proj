@@ -61,8 +61,6 @@ function drawTable(dataset, anSelectat) {
                   tdSV.innerHTML = (tableData[index].valoare !== null ? tableData[index].valoare : "-");
                   maxValue = Math.max(...tableData.filter(e => e.indicator === "SV").map(x => x.valoare));
                   minValue = Math.min(...tableData.filter(e => e.indicator === "SV" && e.valoare !== null).map(x => x.valoare));
-                  console.log(minValue)
-                  console.log(SVvalues);
                   if (tableData[index].valoare === maxValue) {
                      tdSV.style.backgroundColor = "green";
                   }
@@ -121,8 +119,6 @@ function drawTable(dataset, anSelectat) {
 
             }
 
-
-
          }
       }
       tr.appendChild(tdTara);
@@ -134,22 +130,33 @@ function drawTable(dataset, anSelectat) {
       table.appendChild(tBody);
 
    });
-
    //adaugare tabel in pagina
    document.body.appendChild(table);
 }
 
 function drawChart(dataset, taraSelectata) {
    let chartDiv = document.getElementById("chart_div");
+   //daca exista deja svg inseamna ca am un grafic creat deja, il fac sa dispara
+   let svg = document.getElementById("svgChart");
+   if (svg) {
+      chartDiv.removeChild(svg);
+   }
+   //desenez un nou grafic 
    let barChart = new BarChart(chartDiv);
    let date = dataset.filter(el => el.tara === taraSelectata && el.valoare != null).filter(el => el.indicator === "PIB");
    barChart.draw(date);
 }
+//TO DO
+function drawBubbleChart(dataset, anSelectat) {
+   let canvas = document.getElementById("canvas_chart");
+   let context = canvas.getContext("2d");
+   context.fillRect(0, 0, canvas.width, canvas.height);
+}
+
 
 async function main() {
    //preluare date din fisierul json
    const dataset = await getDate();
-   //console.log(dataset);
 
    let ani = [];
    let tari = [];
@@ -179,7 +186,6 @@ async function main() {
    let btnDrawTable = document.getElementById("btnDeseneazaTabel");
    let btnDrawBublechart = document.getElementById("btnBubbleChart");
    let btnBarchart = document.getElementById("btnChart");
-   let btnDeleteChart = document.getElementById("btnDeleteChart");
    let anSelectat = undefined;
    let taraSelectata = undefined;
 
@@ -188,7 +194,7 @@ async function main() {
       anSelectat = this.value;
       btnDrawTable.style.display = "inline-block";
       btnDrawBublechart.style.display = "inline-block";
-      btnDeleteChart.style.display = "inline-block";
+
    });
    //abonare la evenimentul de change=>cand user-ul alege o tara apare butonul cu optiunea corespunzatoare si se salveaza tara 
    selectTara.addEventListener("change", function () {
@@ -215,12 +221,10 @@ async function main() {
    });
    btnDrawBublechart.addEventListener("click", function () {
       if (taraSelectata !== "Selecteaza tara") {
-
+         drawBubbleChart(dataset, anSelectat);
       } else alert("Selectati o tara!");
    });
-   btnDeleteChart.addEventListener('click', () => {
 
-   })
 
 }
 
@@ -239,7 +243,6 @@ class BarChart {
       this.drawBars(data);
    }
    createSVG() {
-      console.log(this.width);
       this.svg = document.createElementNS(this.svgns, "svg");
       this.svg.style.borderColor = "black";
       this.svg.style.borderWidth = "1px";
@@ -264,7 +267,7 @@ class BarChart {
       titlu.appendChild(document.createTextNode("Evolutie PIB in " + tara));
       titlu.setAttribute("font-style", "italic");
       titlu.style.fill = "#696969";
-      titlu.setAttribute("font-family","sans-serif");
+      titlu.setAttribute("font-family", "sans-serif");
       titlu.setAttribute("x", this.element.clientWidth / 2);
       titlu.setAttribute("y", this.element.clientHeight - maxBarHeight - 30);
 
@@ -302,7 +305,6 @@ class BarChart {
             console.log("hello")
             maxBarHeight = barHeight;
          }
-         console.log(maxBarHeight)
 
          bar.style.stroke = "black";
          let strWidth = "stroke-width";
@@ -327,18 +329,14 @@ class BarChart {
          text.setAttribute("y", barY + barHeight - 5);
          this.svg.appendChild(text);
 
-
-
-
       }
       //apelez functia care deseneaza titlul chart-ului
       this.drawTitle(tara, maxBarHeight);
-
    }
 }
 
 
-//main();
+
 
 
 
