@@ -69,8 +69,11 @@ function drawTable(dataset, anSelectat) {
                   if (tableData[index].valoare === minValue) {
                      tdSV.style.backgroundColor = "red";
                   }
-                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 4) {
                      tdSV.style.backgroundColor = "#FC3";
+                  }
+                  if (tableData[index].valoare > (minValue + maxValue) / 4 && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                     tdSV.style.backgroundColor = "#FFA500";
                   }
                   if (tableData[index].valoare > (minValue + maxValue) / 2 && tableData[index].valoare < maxValue) {
                      tdSV.style.backgroundColor = "#9C3";
@@ -86,7 +89,10 @@ function drawTable(dataset, anSelectat) {
                   if (tableData[index].valoare === minValue) {
                      tdPIB.style.backgroundColor = "red";
                   }
-                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 4) {
+                     tdPIB.style.backgroundColor = "#FFA500";
+                  }
+                  if (tableData[index].valoare > (minValue + maxValue) / 4 && tableData[index].valoare <= (minValue + maxValue) / 2) {
                      tdPIB.style.backgroundColor = "#FC3";
                   }
                   if (tableData[index].valoare > (minValue + maxValue) / 2 && tableData[index].valoare < maxValue) {
@@ -103,8 +109,11 @@ function drawTable(dataset, anSelectat) {
                   if (tableData[index].valoare === minValue) {
                      tdPop.style.backgroundColor = "red";
                   }
-                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 4) {
                      tdPop.style.backgroundColor = "#FC3";
+                  }
+                  if (tableData[index].valoare > (minValue + maxValue) / 4 && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                     tdPop.style.backgroundColor = "#FFA500";
                   }
                   if (tableData[index].valoare > (minValue + maxValue) / 2 && tableData[index].valoare < maxValue) {
                      tdPop.style.backgroundColor = "#9C3";
@@ -131,9 +140,9 @@ function drawTable(dataset, anSelectat) {
 }
 
 function drawChart(dataset, taraSelectata) {
-   let barChart = new BarChart(document.getElementById("chart_div"));
+   let chartDiv = document.getElementById("chart_div");
+   let barChart = new BarChart(chartDiv);
    let date = dataset.filter(el => el.tara === taraSelectata && el.valoare != null).filter(el => el.indicator === "PIB");
-   //console.log(date);
    barChart.draw(date);
 }
 
@@ -170,6 +179,7 @@ async function main() {
    let btnDrawTable = document.getElementById("btnDeseneazaTabel");
    let btnDrawBublechart = document.getElementById("btnBubbleChart");
    let btnBarchart = document.getElementById("btnChart");
+   let btnDeleteChart = document.getElementById("btnDeleteChart");
    let anSelectat = undefined;
    let taraSelectata = undefined;
 
@@ -178,6 +188,7 @@ async function main() {
       anSelectat = this.value;
       btnDrawTable.style.display = "inline-block";
       btnDrawBublechart.style.display = "inline-block";
+      btnDeleteChart.style.display = "inline-block";
    });
    //abonare la evenimentul de change=>cand user-ul alege o tara apare butonul cu optiunea corespunzatoare si se salveaza tara 
    selectTara.addEventListener("change", function () {
@@ -187,7 +198,6 @@ async function main() {
    })
    //tratare situatie in care user-ul apasa pe un buton fara un an selectat
    btnDrawTable.addEventListener('click', function () {
-      //console.log(anSelectat);
       if (anSelectat !== "Selecteaza an") {
          drawTable(dataset, anSelectat);
       }
@@ -208,16 +218,18 @@ async function main() {
 
       } else alert("Selectati o tara!");
    });
+   btnDeleteChart.addEventListener('click', () => {
 
+   })
 
 }
 
 class BarChart {
-   constructor(domElement) {
-      this.domElement = domElement;
+   constructor(element) {
+      this.element = element;
       this.svgns = "http://www.w3.org/2000/svg"
-      this.width = domElement.clientWidth;
-      this.height = domElement.clientHeight;
+      this.width = element.clientWidth;
+      this.height = element.clientHeight;
 
    }
    draw(data) {
@@ -235,7 +247,7 @@ class BarChart {
       this.svg.setAttribute("width", this.width);
       this.svg.setAttribute("height", this.height);
       this.svg.setAttribute("id", "svgChart");
-      this.domElement.appendChild(this.svg);
+      this.element.appendChild(this.svg);
    }
    drawBackground() {
       const rect = document.createElementNS(this.svgns, "rect");
@@ -244,21 +256,30 @@ class BarChart {
       rect.setAttribute("width", this.width);
       rect.setAttribute("height", this.height);
       rect.style.fill = "WhiteSmoke";
-
       this.svg.appendChild(rect);
 
+   }
+   drawTitle(tara, maxBarHeight) {
+      const titlu = document.createElementNS(this.svgns, "text");
+      titlu.appendChild(document.createTextNode("Evolutie PIB in " + tara));
+      titlu.setAttribute("font-style", "italic");
+      titlu.style.fill = "#696969";
+      titlu.setAttribute("font-family","sans-serif");
+      titlu.setAttribute("x", this.element.clientWidth / 2);
+      titlu.setAttribute("y", this.element.clientHeight - maxBarHeight - 30);
+
+      this.svg.appendChild(titlu);
    }
    drawBars() {
       const barWidth = this.width / this.data.length;
 
       const maxValue = Math.max(...this.data.map(x => x.valoare));
-      console.log(maxValue);
       const f = this.height / maxValue;
 
       for (let i = 0; i < this.data.length; i++) {
          const label = this.data[i].an;
          const value = this.data[i].valoare;
-         console.log(value)
+         var tara = this.data[i].tara;
          const barHeight = value * f * 0.9;
          console.log(barHeight);
          const barX = i * barWidth;
@@ -275,30 +296,43 @@ class BarChart {
          } else {
             bar.style.fill = "tomato";
          }
+         //salvez barHeight pentru elementul maxim (var -> nu vreau block-scope in acest caz)
+         var maxBarHeight;
+         if (value == maxValue) {
+            console.log("hello")
+            maxBarHeight = barHeight;
+         }
+         console.log(maxBarHeight)
 
          bar.style.stroke = "black";
          let strWidth = "stroke-width";
          bar.style["stroke-width"] = "1px";
-
+         //abonare la evenimentul de mouseover si afisare tooltip
          bar.addEventListener('mouseover', (ev) => {
             let title = document.createElementNS(this.svgns, "title");
-            title.textContent = `PIB: ${value}  Anul:${label}`;
-            title.setAttribute("x",ev.clientX);
-            title.setAttribute("y",ev.clientY);
+            title.textContent = `PIB: ${value} Anul:${label}`;
+            title.setAttribute("x", ev.clientX);
+            title.setAttribute("y", ev.clientY);
             bar.appendChild(title);
          });
 
          this.svg.appendChild(bar);
+         //afisare an sub fiecare bara
          const text = document.createElementNS(this.svgns, "text");
-         //setare continut
+         //setare continut pentru text
          text.appendChild(document.createTextNode(label));
-         //setare coordonate
+         //setare coordonate text (sub fiecare bara)
+         text.style.fill = "#696969";
          text.setAttribute("x", barX);
          text.setAttribute("y", barY + barHeight - 5);
          this.svg.appendChild(text);
 
 
+
+
       }
+      //apelez functia care deseneaza titlul chart-ului
+      this.drawTitle(tara, maxBarHeight);
 
    }
 }
