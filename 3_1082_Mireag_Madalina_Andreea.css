@@ -4,21 +4,14 @@ body{
  width: 100%;
  height: 100%;
  }
- /*Stilizare select pt ani*/
-#ani{
+ /*Stilizare select pt ani si pt tara*/
+#ani,#selectTara{
   display: inline-block; 
   width:10%;
   margin: 3px;
   border-radius: 10px;
   padding: 5px 2px;
  }
-#selectTara{
-    display: inline-block; 
-    width:10%;
-    margin: 3px;
-    border-radius: 10px;
-    padding: 5px 2px;
-}
 /*reguli comune aplicate butoanelor*/
 #btnDeseneazaTabel,#btnBubbleChart,#btnChart{
   border-radius: 10px;
@@ -26,7 +19,7 @@ body{
   color:white;
   margin: 3px;
 }
-/*stilizare navbar*/
+/*stilizare navbar - elemente centrate vertical*/
 #navBar{
   display: flex;
   justify-content: flex-start; 
@@ -35,22 +28,30 @@ body{
   width:100%; 
   height: 40px;
 }
-#chart_div{
-  position: relative;
-  float: right;
-  right:5%;
-  width:100vh;
-  height: 80vh;
-}
-
 #dataTable{
   width:30%;
   height: 50%;
   position: relative;
   float: left;
+  top:1%;
   left: 2%;
   right: 2%;
 }
+#chart_div{
+  position: relative;
+  float: right;
+  right:5%;
+  width:50%;
+  height: 80vh;
+}
+#canvas_chart{
+
+  position: relative;
+  float: right;
+  right:5%;
+  margin-bottom: 3%;
+ }
+ /* suprascriere padding pt stilul tabelului de la bootstrap*/
 td,th{
 padding: 3px !important;
 }
