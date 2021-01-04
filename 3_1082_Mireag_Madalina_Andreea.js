@@ -158,29 +158,58 @@ function drawBubbleChart(dataset, anSelectat) {
    canvas.style.display = "inline-block";
    let context = canvas.getContext("2d");
 
-
+   let R = 35;
    context.fillStyle = "whitesmoke";
    context.fillRect(0, 0, canvas.width, canvas.height);
    canvas.style.border = "1px solid black";
    context.fillStyle = "#696969";
-   let SVdata = dataset.filter(e => e.an === anSelectat).filter(e => e.indicator === "SV");
-   let tari = SVdata.map(elem => elem.tara).slice(0, 27);
+   let canvasWidth = canvas.width - 15
+   let canvasHeight = canvas.height - 15
+   let tableData = dataset.filter(e => e.an === anSelectat);
+   //iau toate tarile intr-un vector(sunt 27 de tari in UE)
+   let tari = tableData.map(elem => elem.tara).slice(0, 27);
+   let maxValue = Math.max(...tableData.filter(e => e.indicator === "PIB").map(x => x.valoare));
+   let f = canvas.height / maxValue;
    tari.forEach(element => {
-      for (let index = 0; index < SVdata.length; index++) {
-         if (tableData[index].tara === element) {
-
-            const bubbleY = SVdata[index].valoare * 0.9;
-            context.beginPath();
-
-            context.endPath();
+      let x, y, r, i = 0;
+      dataset.map(item => {
+         if (item.tara == element && item.an == anSelectat && item.indicator == 'PIB') {
+            x = item.valoare - (canvas.width / tableData.length);
+            console.log("x: "+x);
          }
-      }
+      })
+      i=i+1;
+      dataset.map(item => {
+         if (item.tara === element && item.an === anSelectat && item.indicator === 'POP') {
+            y = f*0.9*item.valoare - canvas.height
+            console.log("y: "+y);
+         }
+      })
+
+      dataset.map(item => {
+         if (item.tara === element && item.an === anSelectat && item.indicator === 'SV') {
+            r = Math.round(item.valoare * 0.2);
+            console.log("r: "+ r);
+         }
+      })
+      context.beginPath();
+
+      context.moveTo(x + r, y);
+      context.arc(x, y, r, 0, 2 * Math.PI);
+      context.fillStyle = "red";
+      context.strokeStyle = 'black';
+      context.fill();
+      context.stroke();
+     // context.closePath(); 
+   
    })
-
-
-
-
 }
+
+
+
+
+
+
 
 
 async function main() {
