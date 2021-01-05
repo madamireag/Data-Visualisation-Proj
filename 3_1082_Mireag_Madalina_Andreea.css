@@ -29,30 +29,39 @@ body{
   height: 40px;
 }
 #dataTable{
-  width:30%;
   height: 50%;
   position: relative;
-  float: left;
-  top:1%;
-  left: 2%;
-  right: 2%;
+  margin:10px; 
 }
+
 #chart_div{
   position: relative;
-  float: right;
-  right:5%;
-  width:50%;
+  float:right;
+  width:100vh;
   height: 80vh;
+  margin-left: 0px;
+  padding: 0px;
+}
+h6{
+  margin:0px;
+}
+#sectiuneBarchart{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  float:right;
+  width:55%;
+  height: 100vh;
+  margin:2px;
+  padding: 2px;
 }
 #canvas_chart{
-
   position: relative;
-  float: right;
-  right:5%;
-  margin-bottom: 3%;
+  float: left;
  }
+
  /* suprascriere padding pt stilul tabelului de la bootstrap*/
 td,th{
 padding: 3px !important;
 }
-

@@ -1,16 +1,28 @@
+// ~~~~~~~~~ PRELUARE DATE ~~~~~~~~~~~~~~
 async function getDate() {
    let response = await fetch('./media/eurostat.json');
    let data = await response.json();
    return data;
 }
-
-function drawTable(dataset, anSelectat) {
+// ~~~~~~~~~ DESENARE TABEL ~~~~~~~~~~~~~~
+function creareTabel(dateTabel) {
    //daca tabelul exista deja il sterg si creez altul
    let existentTable = document.getElementById("dataTable");
    if (existentTable)
       document.body.removeChild(existentTable);
+   let canvas = document.getElementById("canvas_chart");
 
    let table = document.createElement("table");
+   //pozitionez tabelul in pagina in functie de existenta canvasului
+   if (canvas.style.display === "inline-block") {
+      table.style.width = "90%";
+      table.style.float = 'none';
+   }
+   else {
+      table.style.width = "30%";
+      table.style.float = 'left';
+   }
+
    table.setAttribute("id", "dataTable"); //ii dau id ca sa-l pot referi mai departe
    table.classList.add("table");
    //creare header tabel
@@ -36,89 +48,86 @@ function drawTable(dataset, anSelectat) {
    table.appendChild(tHead);
    //creare table body cu date
    let tBody = document.createElement("tbody");
-   let tr;
    let tdTara;
    let tdSV;
    let tdPIB;
    let tdPop;
-   let tableData = [];
    let maxValue;
    let minValue;
-   //filtrez datele si le iau doar pe cele care corespund anului selectat
-   tableData = dataset.filter(e => e.an === anSelectat);
+
    //iau toate tarile intr-un vector(sunt 27 de tari in UE)
-   let tari = tableData.map(elem => elem.tara).slice(0, 27);
+   let tari = dateTabel.map(elem => elem.tara).slice(0, 27);
    //pentru fiecare tara creez randul corespunzator din tabel
    tari.forEach(element => {
-      tr = document.createElement("tr");
+      const tr = document.createElement("tr");
       tdTara = document.createElement("td");
       tdTara.innerHTML = element;
       tdSV = document.createElement("td");
       tdPIB = document.createElement("td");
       tdPop = document.createElement("td");
-      for (let index = 0; index < tableData.length; index++) {
-         if (tableData[index].tara === element) {
-            switch (tableData[index].indicator) {
+      for (let index = 0; index < dateTabel.length; index++) {
+         if (dateTabel[index].tara === element) {
+            switch (dateTabel[index].indicator) {
                case "SV":
-                  tdSV.innerHTML = (tableData[index].valoare !== null ? tableData[index].valoare : "-");
-                  maxValue = Math.max(...tableData.filter(e => e.indicator === "SV").map(x => x.valoare));
+                  tdSV.innerHTML = (dateTabel[index].valoare !== null ? dateTabel[index].valoare : "-");
+                  let maximSV = Math.max(...dateTabel.filter(e => e.indicator === "SV").map(x => x.valoare));
                   //colorare celule in functie de anumite intervale stabilite
-                  minValue = Math.min(...tableData.filter(e => e.indicator === "SV" && e.valoare !== null).map(x => x.valoare));
-                  if (tableData[index].valoare === maxValue) {
+                  let minimSV = Math.min(...dateTabel.filter(e => e.indicator === "SV" && e.valoare !== null).map(x => x.valoare));
+                  if (dateTabel[index].valoare === maximSV) {
                      tdSV.style.backgroundColor = "green";
                   }
-                  if (tableData[index].valoare === minValue) {
+                  if (dateTabel[index].valoare === minimSV) {
                      tdSV.style.backgroundColor = "red";
                   }
-                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                  if (dateTabel[index].valoare > minimSV && dateTabel[index].valoare <= (minimSV + maximSV) / 2) {
                      tdSV.style.backgroundColor = "#FC3";
                   }
-                  if (tableData[index].valoare > (minValue + maxValue) / 4 && tableData[index].valoare <= (minValue + maxValue) / 2 && tableData[index].valoare !== minValue) {
+                  if (dateTabel[index].valoare > (minimSV + maximSV) / 4 && dateTabel[index].valoare <= (minimSV + maximSV) / 2 && dateTabel[index].valoare !== minimSV) {
                      tdSV.style.backgroundColor = "#FFA500";
                   }
-                  if (tableData[index].valoare > (minValue + maxValue) / 2 && tableData[index].valoare < maxValue) {
+                  if (dateTabel[index].valoare > (minimSV + maximSV) / 2 && dateTabel[index].valoare < maximSV) {
                      tdSV.style.backgroundColor = "#9C3";
                   }
                   break;
                case "PIB":
-                  tdPIB.innerHTML = (tableData[index].valoare !== null ? tableData[index].valoare : " - ");
-                  maxValue = Math.max(...tableData.filter(e => e.indicator === "PIB").map(x => x.valoare));
-                  minValue = Math.min(...tableData.filter(e => e.indicator === "PIB" && e.valoare !== null).map(x => x.valoare));
+                  tdPIB.innerHTML = (dateTabel[index].valoare !== null ? dateTabel[index].valoare : " - ");
+                  maxValue = Math.max(...dateTabel.filter(e => e.indicator === "PIB").map(x => x.valoare));
+                  minValue = Math.min(...dateTabel.filter(e => e.indicator === "PIB" && e.valoare !== null).map(x => x.valoare));
                   //colorare celule in functie de anumite intervale stabilite
-                  if (tableData[index].valoare === maxValue) {
+                  if (dateTabel[index].valoare === maxValue) {
                      tdPIB.style.backgroundColor = "green";
                   }
-                  if (tableData[index].valoare === minValue) {
+                  if (dateTabel[index].valoare === minValue) {
                      tdPIB.style.backgroundColor = "red";
                   }
-                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 4) {
+                  if (dateTabel[index].valoare > minValue && dateTabel[index].valoare <= (minValue + maxValue) / 4) {
                      tdPIB.style.backgroundColor = "#FFA500";
                   }
-                  if (tableData[index].valoare > (minValue + maxValue) / 4 && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                  if (dateTabel[index].valoare > (minValue + maxValue) / 4 && dateTabel[index].valoare <= (minValue + maxValue) / 2) {
                      tdPIB.style.backgroundColor = "#FC3";
                   }
-                  if (tableData[index].valoare > (minValue + maxValue) / 2 && tableData[index].valoare < maxValue) {
+                  if (dateTabel[index].valoare > (minValue + maxValue) / 2 && dateTabel[index].valoare < maxValue) {
                      tdPIB.style.backgroundColor = "#9C3";
                   }
                   break;
                case "POP":
-                  tdPop.innerHTML = (tableData[index].valoare !== null ? tableData[index].valoare : " - ");
-                  maxValue = Math.max(...tableData.filter(e => e.indicator === "POP").map(x => x.valoare));
-                  minValue = Math.min(...tableData.filter(e => e.indicator === "POP" && e.valoare !== null).map(x => x.valoare));
+                  tdPop.innerHTML = (dateTabel[index].valoare !== null ? dateTabel[index].valoare : " - ");
+                  maxValue = Math.max(...dateTabel.filter(e => e.indicator === "POP").map(x => x.valoare));
+                  minValue = Math.min(...dateTabel.filter(e => e.indicator === "POP" && e.valoare !== null).map(x => x.valoare));
                   //colorare celule in functie de anumite intervale stabilite
-                  if (tableData[index].valoare === maxValue) {
+                  if (dateTabel[index].valoare === maxValue) {
                      tdPop.style.backgroundColor = "green";
                   }
-                  if (tableData[index].valoare === minValue) {
+                  if (dateTabel[index].valoare === minValue) {
                      tdPop.style.backgroundColor = "red";
                   }
-                  if (tableData[index].valoare > minValue && tableData[index].valoare <= (minValue + maxValue) / 4) {
+                  if (dateTabel[index].valoare > minValue && dateTabel[index].valoare <= (minValue + maxValue) / 4) {
                      tdPop.style.backgroundColor = "#FFA500"; //some kind of orange
                   }
-                  if (tableData[index].valoare > (minValue + maxValue) / 4 && tableData[index].valoare <= (minValue + maxValue) / 2) {
+                  if (dateTabel[index].valoare > (minValue + maxValue) / 4 && dateTabel[index].valoare <= (minValue + maxValue) / 2) {
                      tdPop.style.backgroundColor = "#FC3"; //galben-ish
                   }
-                  if (tableData[index].valoare > (minValue + maxValue) / 2 && tableData[index].valoare < maxValue) {
+                  if (dateTabel[index].valoare > (minValue + maxValue) / 2 && dateTabel[index].valoare < maxValue) {
                      tdPop.style.backgroundColor = "#9C3"; //verde mai putin intens
                   }
 
@@ -138,82 +147,105 @@ function drawTable(dataset, anSelectat) {
    //adaugare tabel in pagina
    document.body.appendChild(table);
 }
-
-function drawChart(dataset, taraSelectata) {
+// ~~~~~~~~ BARCHART ~~~~~~~~~~
+function drawChart(dateTaraSelectata) {
    let chartDiv = document.getElementById("chart_div");
    //daca exista deja svg inseamna ca am un grafic creat deja, il fac sa dispara
    let svg = document.getElementById("svgChart");
    if (svg) {
       chartDiv.removeChild(svg);
    }
-   //desenez un nou grafic 
+   //creez o noua instanta de Barchart
    let barChart = new BarChart(chartDiv);
    //filtrez datele pentru PIB -> nu iau in considerare valorile de null
-   let date = dataset.filter(el => el.tara === taraSelectata && el.valoare != null).filter(el => el.indicator === "PIB");
+   let date = dateTaraSelectata.filter(el => el.indicator === "PIB");
+   //apelez functia draw pentru a desena graficul
    barChart.draw(date);
 }
-//TO DO
-function drawBubbleChart(dataset, anSelectat) {
+
+function scalareValori(date) {
+   date = date.map(item => {
+      const valori = date.filter(x => x.indicator === item.indicator).map(x => x.valoare);
+      const minim = Math.min(...valori);
+      const maxim = Math.max(...valori);
+      //folosesc metoda MinMax Scalling pentru a normaliza datele
+      item.valoareScalata = (item.valoare - minim) / (maxim - minim);
+      console.log(item);
+      return item;
+   });
+   return date;
+}
+// ~~~~~~~~~~~BUBBLE CHART ~~~~~~~~~~~~~
+function drawBubbleChart(dateAnSelectat) {
    let canvas = document.getElementById("canvas_chart");
    canvas.style.display = "inline-block";
    let context = canvas.getContext("2d");
-
-   let R = 35;
+   //desenare contur si umplere fundal
    context.fillStyle = "whitesmoke";
    context.fillRect(0, 0, canvas.width, canvas.height);
    canvas.style.border = "1px solid black";
    context.fillStyle = "#696969";
-   let canvasWidth = canvas.width - 15
-   let canvasHeight = canvas.height - 15
-   let tableData = dataset.filter(e => e.an === anSelectat);
+   //las 10 pixeli sa nu iasa din canvas
+   let canvasWidth = canvas.width - 10
+   let canvasHeight = canvas.height - 10
+
    //iau toate tarile intr-un vector(sunt 27 de tari in UE)
-   let tari = tableData.map(elem => elem.tara).slice(0, 27);
-   let maxValue = Math.max(...tableData.filter(e => e.indicator === "PIB").map(x => x.valoare));
-   let f = canvas.height / maxValue;
-   tari.forEach(element => {
-      let x, y, r, i = 0;
-      dataset.map(item => {
-         if (item.tara == element && item.an == anSelectat && item.indicator == 'PIB') {
-            x = item.valoare - (canvas.width / tableData.length);
-            console.log("x: "+x);
+   let tari = dateAnSelectat.map(elem => elem.tara).slice(0, 27);
+   //apelez functia care scaleaza valorile si le transforma in intervalul [0,1] 
+   dateAnSelectat = scalareValori(dateAnSelectat);
+   //pentru fiecare tara calculez coordonatele pentru axa x, y si pentru raza in functie de valorile scalate
+   tari.forEach((element, index) => {
+      let x, y, r;
+
+
+
+      //calcul coordonate pt raza in functie de valorile scalate ale sperantei de viata
+      dateAnSelectat.map(el => {
+         if (el.tara === element && el.indicator === 'SV') {
+            r = el.valoareScalata * 27 + 10;
+            console.log("r: " + r);
          }
       })
-      i=i+1;
-      dataset.map(item => {
-         if (item.tara === element && item.an === anSelectat && item.indicator === 'POP') {
-            y = f*0.9*item.valoare - canvas.height
-            console.log("y: "+y);
+      //calcul coordonate pt x in functie de valorile scalate ale PIB
+      dateAnSelectat.map(el => {
+         if (el.tara == element && el.indicator == 'PIB') {
+            x = (el.valoareScalata * canvasWidth);
+
+            console.log("x: " + x);
+         }
+      })
+      //calcul coordonate pt y in functie de valorile scalate ale populatiei
+      dateAnSelectat.map(el => {
+         if (el.tara === element && el.indicator === 'POP') {
+            y = canvasHeight - (canvasHeight * el.valoareScalata) - r;
+            console.log("y: " + y);
          }
       })
 
-      dataset.map(item => {
-         if (item.tara === element && item.an === anSelectat && item.indicator === 'SV') {
-            r = Math.round(item.valoare * 0.2);
-            console.log("r: "+ r);
-         }
-      })
       context.beginPath();
-
+      //ma pozitionez la marginea cercului
       context.moveTo(x + r, y);
+      //desenez un cerc cu centrul in coordonatele calculate si raza r
       context.arc(x, y, r, 0, 2 * Math.PI);
-      context.fillStyle = "red";
+      //pentru fiecare tara o nuanta diferita
+      context.fillStyle = `rgb(${index * 7},${index},0,0.1)`;
       context.strokeStyle = 'black';
       context.fill();
       context.stroke();
-     // context.closePath(); 
-   
+      //afisez tara pe fiecare bubble
+      context.fillStyle = "black";
+      context.font = "10px sans serif";
+      context.fillText(element, x, y);
+      context.closePath();
+
    })
 }
 
 
 
-
-
-
-
-
+//   ~~~~~~~~~~~~~ Functia principala ~~~~~~~~~~~~~~~
 async function main() {
-   //preluare date din fisierul json
+   //preluare date din fisierul json prin apelarea functiei de mai sus
    const dataset = await getDate();
 
    let ani = [];
@@ -231,39 +263,47 @@ async function main() {
    }
    let select = document.getElementById("ani");
    let selectTara = document.getElementById("selectTara");
+   //adaugare optiuni care ii spun utilizatorului ce sa selecteze
    select.add(new Option("Selecteaza an"));
    selectTara.add(new Option("Selecteaza tara"));
-   //populare select cu anii/tarile din array-uri
+   //populare select corespunzator cu anii/tarile din array-uri
    for (let a in ani) {
       select.add(new Option(ani[a]));
    }
    for (let t in tari) {
       selectTara.add(new Option(tari[t]));
    }
-
+   //preluare butoane
    let btnDrawTable = document.getElementById("btnDeseneazaTabel");
    let btnDrawBublechart = document.getElementById("btnBubbleChart");
    let btnBarchart = document.getElementById("btnChart");
+
    let anSelectat = undefined;
    let taraSelectata = undefined;
+   let dateAnSelectat = [];
+   let dateTaraSelectata = [];
 
    //abonare la evenimentul de change => cand utilizatorul alege un an apar butoanele cu optiunile corespunzatoare si se salveaza anul 
    select.addEventListener("change", function () {
       anSelectat = this.value;
       btnDrawTable.style.display = "inline-block";
       btnDrawBublechart.style.display = "inline-block";
+      //filtrez datele si le iau doar pe cele care corespund anului selectat
+      dateAnSelectat = dataset.filter(e => e.an === anSelectat);
 
    });
    //abonare la evenimentul de change => cand utilizatorul alege o tara apare butonul cu optiunea corespunzatoare si se salveaza tara 
    selectTara.addEventListener("change", function () {
       taraSelectata = this.value;
       btnBarchart.style.display = "inline-block";
+      //filtrez datele si le iau doar pe cele care corespund tarii selectate
+      dateTaraSelectata = dataset.filter(el => el.tara === taraSelectata && el.valoare != null);
 
    })
    //tratare eveniment de click pe buton si situatie in care user-ul apasa pe un buton fara un an selectat
    btnDrawTable.addEventListener('click', function () {
       if (anSelectat !== "Selecteaza an") {
-         drawTable(dataset, anSelectat);
+         creareTabel(dateAnSelectat); //apelez functia pentru a crea tabelul
       }
       else {
          alert("Selectati un an!");
@@ -273,20 +313,20 @@ async function main() {
    //tratare eveniment de click pe buton si situatie in care user-ul apasa pe buton fara o tara selectata
    btnBarchart.addEventListener("click", function () {
       if (taraSelectata !== "Selecteaza tara") {
-         drawChart(dataset, taraSelectata);
+         drawChart(dateTaraSelectata, taraSelectata); //apelez functia care deseneaza graficul
       }
       else alert("Selectati o tara!");
    });
    btnDrawBublechart.addEventListener("click", function () {
       if (taraSelectata !== "Selecteaza tara") {
-         drawBubbleChart(dataset, anSelectat);
+         drawBubbleChart(dateAnSelectat);
       } else alert("Selectati o tara!");
    });
 
 
 }
 
-
+//clasa preluata de la seminar si ajustata conform cerintelor
 class BarChart {
    constructor(element) {
       this.element = element;
@@ -313,6 +353,7 @@ class BarChart {
       this.svg.setAttribute("height", this.height);
       //setare id pentru svg pentru a fi referit ulterior
       this.svg.setAttribute("id", "svgChart");
+      //adaugare svg la elementul pe care se va afisa graficul
       this.element.appendChild(this.svg);
    }
    drawBackground() {
@@ -323,6 +364,7 @@ class BarChart {
       rect.setAttribute("width", this.width);
       rect.setAttribute("height", this.height);
       rect.style.fill = "WhiteSmoke";
+      //adaugare dreptunghi la elementul svg
       this.svg.appendChild(rect);
 
    }
@@ -337,14 +379,15 @@ class BarChart {
       //setare coordonate pentru titlu (in centru pe orizontala si pe verticala calculat in functie de inaltimea maxima a barelor)
       titlu.setAttribute("x", this.element.clientWidth / 2);
       titlu.setAttribute("y", this.element.clientHeight - maxBarHeight - 30);
-
+      //adaugare titlu la elementul svg
       this.svg.appendChild(titlu);
    }
    drawBars() {
       //latimea unei bare
       const barWidth = this.width / this.data.length;
-
+      //valoarea maxima a datelor reprezentate
       const maxValue = Math.max(...this.data.map(x => x.valoare));
+      //factor de scalare
       const f = this.height / maxValue;
 
       for (let i = 0; i < this.data.length; i++) {
@@ -353,22 +396,22 @@ class BarChart {
          var tara = this.data[i].tara;
          const barHeight = value * f * 0.9;
          //coordonatele x si y pentru bare
-         const barX = i * barWidth;
+         const barX = i * barWidth; //ma deplasez pe orizontala
          const barY = this.height - barHeight;
 
 
          const bar = document.createElementNS(this.svgns, "rect");
          bar.setAttribute("x", barX + barWidth / 4);
-         bar.setAttribute("y", barY - 20);
+         bar.setAttribute("y", barY - 20); //las putin spatiu in jos pentru a afisa anul(eticheta)
          bar.setAttribute("width", barWidth / 2);
          bar.setAttribute("height", barHeight);
          //colorez bara corespunzatoare valorii maxime diferit
          if (value === maxValue) {
             bar.style.fill = "#724166";
          } else {
-            bar.style.fill = "tomato";
+            bar.style.fill = "#ff8000";
          }
-         //salvez barHeight pentru elementul cu valoare maxima (var -> nu vreau block-scope in acest caz)
+         //salvez barHeight pentru elementul cu valoare maxima (var -> nu vreau block-scope in acest caz) deoarece o folosesc in functia ce deseneaza titlul
          var maxBarHeight;
          if (value == maxValue) {
             console.log("hello")
@@ -377,7 +420,8 @@ class BarChart {
 
          bar.style.stroke = "black";
          bar.style["stroke-width"] = "1px";
-         //abonare la evenimentul de mouseover si afisare tooltip (browserele afiseaza elementul de tip title ca si un tooltip)
+         // ~~~~~~ CERINTA TOOLTIP PE GRAFIC ~~~~~~~ 
+         //abonare la evenimentul de mouseover si afisare tooltip (conform MDN, browserele afiseaza elementul de tip title ca un tooltip)
          bar.addEventListener('mouseover', (ev) => {
             let title = document.createElementNS(this.svgns, "title");
             title.textContent = `PIB: ${value} Anul:${label}`;
