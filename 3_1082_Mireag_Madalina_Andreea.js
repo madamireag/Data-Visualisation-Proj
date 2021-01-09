@@ -17,6 +17,7 @@ function creareTabel(dateTabel) {
    if (canvas.style.display === "inline-block") {
       table.style.width = "90%";
       table.style.float = 'none';
+     
    }
    else {
       table.style.width = "30%";
@@ -176,7 +177,7 @@ function scalareValori(date) {
    return date;
 }
 // ~~~~~~~~~~~BUBBLE CHART ~~~~~~~~~~~~~
-function drawBubbleChart(dateAnSelectat) {
+function deseneazaBubbleChart(dateAnSelectat) {
    let canvas = document.getElementById("canvas_chart");
    canvas.style.display = "inline-block";
    let context = canvas.getContext("2d");
@@ -196,9 +197,6 @@ function drawBubbleChart(dateAnSelectat) {
    //pentru fiecare tara calculez coordonatele pentru axa x, y si pentru raza in functie de valorile scalate
    tari.forEach((element, index) => {
       let x, y, r;
-
-
-
       //calcul coordonate pt raza in functie de valorile scalate ale sperantei de viata
       dateAnSelectat.map(el => {
          if (el.tara === element && el.indicator === 'SV') {
@@ -221,13 +219,12 @@ function drawBubbleChart(dateAnSelectat) {
             console.log("y: " + y);
          }
       })
-
       context.beginPath();
       //ma pozitionez la marginea cercului
       context.moveTo(x + r, y);
       //desenez un cerc cu centrul in coordonatele calculate si raza r
       context.arc(x, y, r, 0, 2 * Math.PI);
-      //pentru fiecare tara o nuanta diferita
+      //pentru fiecare tara o nuanta diferita in functie de index
       context.fillStyle = `rgb(${index * 7},${index},0,0.1)`;
       context.strokeStyle = 'black';
       context.fill();
@@ -240,8 +237,6 @@ function drawBubbleChart(dateAnSelectat) {
 
    })
 }
-
-
 
 //   ~~~~~~~~~~~~~ Functia principala ~~~~~~~~~~~~~~~
 async function main() {
@@ -298,7 +293,6 @@ async function main() {
       btnBarchart.style.display = "inline-block";
       //filtrez datele si le iau doar pe cele care corespund tarii selectate
       dateTaraSelectata = dataset.filter(el => el.tara === taraSelectata && el.valoare != null);
-
    })
    //tratare eveniment de click pe buton si situatie in care user-ul apasa pe un buton fara un an selectat
    btnDrawTable.addEventListener('click', function () {
@@ -308,7 +302,6 @@ async function main() {
       else {
          alert("Selectati un an!");
       }
-
    })
    //tratare eveniment de click pe buton si situatie in care user-ul apasa pe buton fara o tara selectata
    btnBarchart.addEventListener("click", function () {
@@ -318,11 +311,10 @@ async function main() {
       else alert("Selectati o tara!");
    });
    btnDrawBublechart.addEventListener("click", function () {
-      if (taraSelectata !== "Selecteaza tara") {
-         drawBubbleChart(dateAnSelectat);
-      } else alert("Selectati o tara!");
+      if (anSelectat !== "Selecteaza an") {
+         deseneazaBubbleChart(dateAnSelectat);
+      } else alert("Selectati un an!");
    });
-
 
 }
 

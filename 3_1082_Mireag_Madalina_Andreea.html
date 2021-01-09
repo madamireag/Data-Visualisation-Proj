@@ -26,18 +26,20 @@
     <select id="selectTara" class="form-control"></select>
     <button id="btnChart" class="btn btn-secondary" style="display: none;">Draw barchart</button>
   </nav>
-  <table id="dataTable"></table>
+ 
   <!--div unde va fi desenat barchart-ul-->
   <div id="sectiuneBarchart" class="container">
     <h6>BarChart pentru tara selectata</h6>
     <div id="chart_div" class="container"></div>
   </div>
-  <div>
+  <!-- sectiunea bubble chart -->
+  <div id="sectiuneBubbleChart">
     <h6>Bubble Chart pentru anul selectat</h6>
     <canvas width="600px" height="500px" style="display:none; width:600px; height:500px;" id="canvas_chart">Your browser
       does
       not support the Canvas element</canvas>
   </div>
+  <table id="dataTable"></table>
   <script>
     main();
   </script>
