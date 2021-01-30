@@ -13,11 +13,10 @@ function creareTabel(dateTabel) {
    let canvas = document.getElementById("canvas_chart");
 
    let table = document.createElement("table");
-   //pozitionez tabelul in pagina in functie de existenta canvasului
-   if (canvas.style.display === "inline-block") {
+   //pozitionez tabelul in pagina in functie de existenta canvasului cu bubble chart
+   if (canvas.style.display !== "none") {
       table.style.width = "90%";
       table.style.float = 'none';
-     
    }
    else {
       table.style.width = "30%";
@@ -70,10 +69,13 @@ function creareTabel(dateTabel) {
          if (dateTabel[index].tara === element) {
             switch (dateTabel[index].indicator) {
                case "SV":
+                  //populare table data(td) corespunzator sperantei de viata pt tara curenta
                   tdSV.innerHTML = (dateTabel[index].valoare !== null ? dateTabel[index].valoare : "-");
+                  //preluare valoare maxima pt Speranta de viata
                   let maximSV = Math.max(...dateTabel.filter(e => e.indicator === "SV").map(x => x.valoare));
-                  //colorare celule in functie de anumite intervale stabilite
+                  //preluare valoare minima pt Speranta de viata
                   let minimSV = Math.min(...dateTabel.filter(e => e.indicator === "SV" && e.valoare !== null).map(x => x.valoare));
+                  //colorare celule in functie de anumite intervale stabilite
                   if (dateTabel[index].valoare === maximSV) {
                      tdSV.style.backgroundColor = "green";
                   }
@@ -91,7 +93,9 @@ function creareTabel(dateTabel) {
                   }
                   break;
                case "PIB":
+                  //populare table data(td) corespunzator PIB pt tara curenta
                   tdPIB.innerHTML = (dateTabel[index].valoare !== null ? dateTabel[index].valoare : " - ");
+                  //preluare valoare maxima si minima pt PIB
                   maxValue = Math.max(...dateTabel.filter(e => e.indicator === "PIB").map(x => x.valoare));
                   minValue = Math.min(...dateTabel.filter(e => e.indicator === "PIB" && e.valoare !== null).map(x => x.valoare));
                   //colorare celule in functie de anumite intervale stabilite
@@ -112,7 +116,9 @@ function creareTabel(dateTabel) {
                   }
                   break;
                case "POP":
+                  //populare table data(td) corespunzator populatiei pt tara curenta
                   tdPop.innerHTML = (dateTabel[index].valoare !== null ? dateTabel[index].valoare : " - ");
+                  //preluare valoare maxima si minima pt populatie
                   maxValue = Math.max(...dateTabel.filter(e => e.indicator === "POP").map(x => x.valoare));
                   minValue = Math.min(...dateTabel.filter(e => e.indicator === "POP" && e.valoare !== null).map(x => x.valoare));
                   //colorare celule in functie de anumite intervale stabilite
@@ -136,12 +142,14 @@ function creareTabel(dateTabel) {
 
          }
       }
+      //adaugare toate table data(td) la table row(tr)
       tr.appendChild(tdTara);
       tr.appendChild(tdSV);
       tr.appendChild(tdPIB);
       tr.appendChild(tdPop);
-
+      //adaugare table row in table body
       tBody.appendChild(tr);
+      //adaugare table body in tabel(table)
       table.appendChild(tBody);
 
    });
@@ -170,8 +178,8 @@ function scalareValori(date) {
       const minim = Math.min(...valori);
       const maxim = Math.max(...valori);
       //folosesc metoda MinMax Scalling pentru a normaliza datele
+      //adaug la vector pe langa valoare si valoarea scalata
       item.valoareScalata = (item.valoare - minim) / (maxim - minim);
-      console.log(item);
       return item;
    });
    return date;
@@ -198,27 +206,22 @@ function deseneazaBubbleChart(dateAnSelectat) {
    tari.forEach((element, index) => {
       let x, y, r;
       //calcul coordonate pt raza in functie de valorile scalate ale sperantei de viata
-      dateAnSelectat.map(el => {
-         if (el.tara === element && el.indicator === 'SV') {
-            r = el.valoareScalata * 27 + 10;
-            console.log("r: " + r);
-         }
-      })
-      //calcul coordonate pt x in functie de valorile scalate ale PIB
-      dateAnSelectat.map(el => {
-         if (el.tara == element && el.indicator == 'PIB') {
-            x = (el.valoareScalata * canvasWidth);
+      dateAnSelectat.filter(e => e.indicator === 'SV' && e.tara === element).map(el => {
+         r = el.valoareScalata * 27 + 10;
+         console.log("r: " + r);
+      });
 
-            console.log("x: " + x);
-         }
+      //calcul coordonate pt x in functie de valorile scalate ale PIB
+      dateAnSelectat.filter(e => e.indicator === 'PIB' && e.tara === element).map(el => {
+         x = (el.valoareScalata * canvasWidth);
       })
-      //calcul coordonate pt y in functie de valorile scalate ale populatiei
-      dateAnSelectat.map(el => {
-         if (el.tara === element && el.indicator === 'POP') {
-            y = canvasHeight - (canvasHeight * el.valoareScalata) - r;
-            console.log("y: " + y);
-         }
-      })
+
+      //calcul coordonate pt y in functie de valorile scalate ale populatiei (vreau sa inceapa desenarea din partea de jos)
+      dateAnSelectat.filter(e => e.indicator === 'POP' && e.tara === element).map(el => {
+         y = canvasHeight - (canvasHeight * el.valoareScalata) - r;
+         console.log("y: " + y);
+      });
+
       context.beginPath();
       //ma pozitionez la marginea cercului
       context.moveTo(x + r, y);
@@ -234,7 +237,6 @@ function deseneazaBubbleChart(dateAnSelectat) {
       context.font = "10px sans serif";
       context.fillText(element, x, y);
       context.closePath();
-
    })
 }
 
@@ -329,12 +331,12 @@ class BarChart {
    }
    draw(data) {
       this.data = data;
-      this.createSVG();
-      this.drawBackground();
+      this.creareSVG();
+      this.desenareFundal();
       this.drawBars(data);
    }
 
-   createSVG() {
+   creareSVG() {
       //creare element svg pe baza namespace-ului
       this.svg = document.createElementNS(this.svgns, "svg");
       //adaugare border pentru element
@@ -348,7 +350,7 @@ class BarChart {
       //adaugare svg la elementul pe care se va afisa graficul
       this.element.appendChild(this.svg);
    }
-   drawBackground() {
+   desenareFundal() {
       //desenare dreptunghi pe toata suprafata elementului
       const rect = document.createElementNS(this.svgns, "rect");
       rect.setAttribute("x", 0);
@@ -358,9 +360,8 @@ class BarChart {
       rect.style.fill = "WhiteSmoke";
       //adaugare dreptunghi la elementul svg
       this.svg.appendChild(rect);
-
    }
-   drawTitle(tara, maxBarHeight) {
+   deseneazaTitlu(tara, maxBarHeight) {
       const titlu = document.createElementNS(this.svgns, "text");
       //setare continut pentru titlu (text)
       titlu.appendChild(document.createTextNode("Evolutie PIB in " + tara));
@@ -383,10 +384,10 @@ class BarChart {
       const f = this.height / maxValue;
 
       for (let i = 0; i < this.data.length; i++) {
-         const label = this.data[i].an;
-         const value = this.data[i].valoare;
+         const eticheta = this.data[i].an;
+         const valoare = this.data[i].valoare;
          var tara = this.data[i].tara;
-         const barHeight = value * f * 0.9;
+         const barHeight = valoare * f * 0.9;
          //coordonatele x si y pentru bare
          const barX = i * barWidth; //ma deplasez pe orizontala
          const barY = this.height - barHeight;
@@ -398,14 +399,14 @@ class BarChart {
          bar.setAttribute("width", barWidth / 2);
          bar.setAttribute("height", barHeight);
          //colorez bara corespunzatoare valorii maxime diferit
-         if (value === maxValue) {
+         if (valoare === maxValue) {
             bar.style.fill = "#724166";
          } else {
             bar.style.fill = "#ff8000";
          }
          //salvez barHeight pentru elementul cu valoare maxima (var -> nu vreau block-scope in acest caz) deoarece o folosesc in functia ce deseneaza titlul
          var maxBarHeight;
-         if (value == maxValue) {
+         if (valoare == maxValue) {
             console.log("hello")
             maxBarHeight = barHeight;
          }
@@ -416,7 +417,7 @@ class BarChart {
          //abonare la evenimentul de mouseover si afisare tooltip (conform MDN, browserele afiseaza elementul de tip title ca un tooltip)
          bar.addEventListener('mouseover', (ev) => {
             let title = document.createElementNS(this.svgns, "title");
-            title.textContent = `PIB: ${value} Anul:${label}`;
+            title.textContent = `PIB: ${valoare} Anul:${eticheta}`;
             title.setAttribute("x", ev.clientX);
             title.setAttribute("y", ev.clientY);
             bar.appendChild(title);
@@ -426,7 +427,7 @@ class BarChart {
          //afisare an sub fiecare bara
          const text = document.createElementNS(this.svgns, "text");
          //setare continut pentru text
-         text.appendChild(document.createTextNode(label));
+         text.appendChild(document.createTextNode(eticheta));
          //setare coordonate text (sub fiecare bara)
          text.style.fill = "#696969";
          text.setAttribute("x", barX);
@@ -435,8 +436,8 @@ class BarChart {
 
       }
       //apelez functia care deseneaza titlul chart-ului
-      this.drawTitle(tara, maxBarHeight);
-   }
+      this.deseneazaTitlu(tara, maxBarHeight);
+     }
 }
 
 
